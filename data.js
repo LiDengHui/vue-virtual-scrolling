@@ -4,7 +4,7 @@ import {faker} from "@faker-js/faker";
 import fs from "fs";
 
 const list = [];
-const totalItems = 100000;
+const totalItems = 10000;
 for(let i = 0; i < totalItems; i++) {
     const height = 30+ Math.random() * 50;
     const _words = 10+ Math.random()*10

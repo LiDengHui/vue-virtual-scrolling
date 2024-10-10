@@ -1,31 +1,26 @@
 <template>
-  {{ first }} {{ last }}
   <div class="virtual-scrolling" @scroll="handleScroll" ref="container">
-    <Bg :height="containerHeight"></Bg>
-    <Item
-        v-for="item in list.slice(first, last + 1)"
-        :offset-top="offsetTopArr[item.index]"
-        :height="item.height"
-        :auto-height="item.autoHeight"
-        :text="value[item.index].text"
-        :key="item.index"
-        @ready="d => resetListHeight(item.index, d)"
-    >
-    </Item>
+    <div class="bg" ></div>
+    <div class="infinite-list">
+      <slot name="item"
+            v-for="item in list.slice(first, last + 1)"
+            :data="value[item.index]"
+            :index="item.index"
+            :height="item.height"
+            :key="item.index">
+      </slot>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
-import Bg from "./Bg.vue";
-import Item from "./Item.vue";
 import {computed, ref, useTemplateRef, watch} from "vue";
 import throttle from "lodash/throttle";
 import binarySearch from "../utils/binarySearch";
-import {ListManager, process_list} from '../../wasm-demo/pkg'
 
 const props = defineProps({
   value: {
     type: Array,
-    default: []
+    default: () => []
   },
   defaultHeight: {
     type: Number,
@@ -38,24 +33,25 @@ const props = defineProps({
   maxShowNumber: {
     type: Number,
     default: 15
-  }
+  },
 });
 
 const list = ref([]);
 
-const listManager = new ListManager()
 
-watch(props.value, () => {
+watch(props.value, (_newData) => {
   const _list = [];
-  props.value.forEach((item, index) => {
-    const _item = {
-      index,
-      height: Math.floor(item.defaultHeight || props.defaultHeight),
-      autoHeight: item.autoHeight || props.autoHeight
-    }
-    _list.push(_item)
-  })
-  list.value = _list;
+  if (Array.isArray(props.value)) {
+    props.value.forEach((item, index) => {
+      const _item = {
+        index,
+        height: Math.floor(item.defaultHeight || props.defaultHeight),
+        autoHeight: item.autoHeight || props.autoHeight
+      }
+      _list.push(_item)
+    })
+    list.value = _list;
+  }
 }, {
   immediate: true,
 })
@@ -70,20 +66,15 @@ const containerHeight = ref(0);
 const offsetTopArr = ref([]);
 
 const cb = throttle(() => {
-
-  console.time("wasm")
-  // let x = process_list(list.value);
-
   const _arr = [];
   let _offsetTop = 0
   list.value.forEach(item => {
     _arr.push(_offsetTop);
     _offsetTop += item.height;
   })
-  console.timeEnd("wasm")
   containerHeight.value = _offsetTop;
   offsetTopArr.value = _arr;
-}, 1);
+}, 10);
 
 watch(() => list.value, cb, {
   immediate: true,
@@ -96,14 +87,10 @@ const scrollTop = ref(0);
  * 计算视窗开始index
  */
 let first = computed(() => {
-  /**
-   * 二分查找最近的数组下标
-   */
-  const e = binarySearch(offsetTopArr.value, scrollTop.value);
-  /**
+  /**x
    * 下标-1 以确保 完全覆盖页面
    */
-  return Math.max(e - 1, 0);
+  return binarySearch(offsetTopArr.value, scrollTop.value)
 });
 
 
@@ -112,17 +99,6 @@ let first = computed(() => {
  */
 let last = computed(() => {
   if (props.autoHeight) return Math.min(first.value + props.maxShowNumber, props.value.length);
-
-  const clientHeight = containerRef.value?.clientHeight || 500;
-  if (offsetTopArr.value.length === 0) return 0;
-  for (let i = first.value + 1; i < Math.min(first.value + props.maxShowNumber, offsetTopArr.value.length); i++) {
-    const temp = offsetTopArr.value[i];
-    const next = list.value[i].height + temp;
-    if (scrollTop.value + clientHeight >= temp && scrollTop.value + clientHeight <= next) {
-      return i;
-    }
-  }
-  return offsetTopArr.value.length - 1;
 });
 
 /**
@@ -133,6 +109,7 @@ let last = computed(() => {
 const handleScroll = (e) => {
   scrollTop.value = e.target.scrollTop;
 }
+
 /**
  * 重新设置高度
  * @param index
@@ -142,6 +119,16 @@ const resetListHeight = (index, {clientHeight}) => {
   list.value[index].height = clientHeight;
 }
 
+defineExpose({
+  resetListHeight
+});
+const offsetTop = computed(() => {
+  const a = offsetTopArr.value[first.value]
+  return `${a}px`
+})
+
+
+const h = computed(()=> `${containerHeight.value}px`)
 </script>
 
 <style lang="scss" scoped>
@@ -152,5 +139,20 @@ const resetListHeight = (index, {clientHeight}) => {
   position: relative;
   width: 700px;
   scroll-behavior: smooth;
+}
+
+.infinite-list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: v-bind(offsetTop)
+}
+
+.bg {
+  position: absolute;
+  top:0;
+  bottom:0;
+  height: v-bind(h);
+  width:100%;
 }
 </style>

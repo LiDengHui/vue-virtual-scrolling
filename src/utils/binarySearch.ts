@@ -18,8 +18,6 @@ export default function binarySearch(arr: number[], target: number) {
   } else if (right < 0) {
     return left;
   } else {
-    let diffLeft = Math.abs(arr[left] - target);
-    let diffRight = Math.abs(arr[right] - target);
-    return diffLeft < diffRight? left : right;
+    return right;
   }
 }
