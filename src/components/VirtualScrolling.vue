@@ -1,6 +1,6 @@
 <template>
   <div class="virtual-scrolling" @scroll="handleScroll" ref="container">
-    <div class="bg" ></div>
+    <div class="bg"></div>
     <div class="infinite-list">
       <slot name="item"
             v-for="item in list.slice(first, last + 1)"
@@ -22,7 +22,11 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
-  defaultHeight: {
+  height: {
+    type: String,
+    default: () => "unset"
+  },
+  defaultItemHeight: {
     type: Number,
     default: 50
   },
@@ -45,7 +49,7 @@ watch(props.value, (_newData) => {
     props.value.forEach((item, index) => {
       const _item = {
         index,
-        height: Math.floor(item.defaultHeight || props.defaultHeight),
+        height: Math.floor(item.defaultHeight || props.defaultItemHeight),
         autoHeight: item.autoHeight || props.autoHeight
       }
       _list.push(_item)
@@ -81,7 +85,6 @@ watch(() => list.value, cb, {
   deep: true
 })
 
-const containerRef = useTemplateRef("container")
 const scrollTop = ref(0);
 /**
  * 计算视窗开始index
@@ -128,12 +131,12 @@ const offsetTop = computed(() => {
 })
 
 
-const h = computed(()=> `${containerHeight.value}px`)
+const h = computed(() => `${containerHeight.value}px`)
 </script>
 
 <style lang="scss" scoped>
 .virtual-scrolling {
-  height: 500px;
+  height: v-bind(height);
   border: 1px solid #ccc;
   overflow-y: auto;
   position: relative;
@@ -150,9 +153,9 @@ const h = computed(()=> `${containerHeight.value}px`)
 
 .bg {
   position: absolute;
-  top:0;
-  bottom:0;
+  top: 0;
+  bottom: 0;
   height: v-bind(h);
-  width:100%;
+  width: 100%;
 }
 </style>

@@ -14,7 +14,7 @@ const setHeight = (index, e) => {
 </script>
 
 <template>
-  <VirtualScrolling :value="_data" :auto-height="true" ref="list" :default-height="48">
+  <VirtualScrolling :value="_data" :auto-height="true" ref="list" :default-item-height="48" height="500px">
     <template #item="{data, index, height}">
       <Item @ready="e=> setHeight(index,e)">
         <div class="item">

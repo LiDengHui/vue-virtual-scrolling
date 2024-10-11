@@ -1,8 +1,24 @@
 {
-  "name": "virtual-scrolling",
+  "name": "@dhlx/virtual-scrolling",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "description": "vue3 虚拟滚动",
+  "main": "./dist/virtual-scrolling.umd.js",
+  "module": "./dist/virtual-scrolling.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/virtual-scrolling.es.js",
+      "require": "./dist/virtual-scrolling.umd.js"
+    },
+    "./dist/style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,7 +26,6 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "vite-plugin-wasm": "^3.3.0",
     "vue": "^3.5.10"
   },
   "devDependencies": {
@@ -18,5 +33,11 @@
     "@vitejs/plugin-vue": "^5.1.4",
     "sass-embedded": "^1.79.4",
     "vite": "^5.4.8"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiDengHui/vue-virtual-scrolling.git"
+  },
+  "author": "lidenghui <3379489032@qq.com>",
+  "license": "MIT"
 }
