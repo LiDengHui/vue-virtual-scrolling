@@ -1,7 +1,7 @@
 {
   "name": "@dhlx/virtual-scrolling",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "files": [
     "dist"
@@ -39,5 +39,10 @@
     "url": "git+https://github.com/LiDengHui/vue-virtual-scrolling.git"
   },
   "author": "lidenghui <3379489032@qq.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "vue3",
+    "virtual",
+    "scrolling"
+  ]
 }
