@@ -1,6 +1,6 @@
 {
   "name": "@dhlx/virtual-scrolling",
-  "private": true,
+  "private": false,
   "version": "0.0.1",
   "type": "module",
   "files": [
